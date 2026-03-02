@@ -1,4 +1,4 @@
-ARRAY AND LINKED LIST:
+
 import java.util.*;
  
 public class ListImplementation {
@@ -26,4 +26,5 @@ public class ListImplementation {
         }
     }
 }
+
 
