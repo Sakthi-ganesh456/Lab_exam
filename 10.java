@@ -1,4 +1,4 @@
-JSP DATABASE :
+
 <%@ page import="java.sql.*" %>
 <html>
 <body>
@@ -94,3 +94,4 @@ out.println(e);
 </table>
 </body>
 </html>
+
