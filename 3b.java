@@ -1,4 +1,4 @@
-B) BOOKLIST:
+
 import java.util.*;
 public class BookListUsingArrayList {
     public static void main(String[] args) {
