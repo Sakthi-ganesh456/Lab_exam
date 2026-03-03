@@ -1,0 +1,12 @@
+ DECLARE
+a NUMBER := 10;
+b NUMBER := 0;
+c NUMBER;
+BEGIN
+c := a / b;
+DBMS_OUTPUT.PUT_LINE(c);
+EXCEPTION
+WHEN ZERO_DIVIDE THEN
+DBMS_OUTPUT.PUT_LINE('Cannot divide by zero');
+END;
+/
