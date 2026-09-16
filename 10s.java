@@ -1,101 +1,123 @@
-# Program 2: Data Preprocessing
+# Program 4: K-Nearest Neighbour Classification
 
-import pandas as pd
 import numpy as np
 
+from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
 
 # --------------------------------------------------
-# STEP 1: Create Dataset
+# STEP 1: Load Dataset
 # --------------------------------------------------
 
-data = {
-    "Age": [20, 21, np.nan, 25, 23, 21, 20],
-    "Salary": [25000, 30000, 35000, np.nan, 40000, 30000, 25000],
-    "City": ["Trichy", "Chennai", "Madurai", "Trichy",
-             "Chennai", "Chennai", "Trichy"],
-    "Purchased": ["No", "Yes", "Yes", "Yes",
-                  "Yes", "Yes", "No"]
-}
+iris = load_iris()
 
-df = pd.DataFrame(data)
-
-print("Original Dataset:")
-print(df)
+X = iris.data
+y = iris.target
 
 # --------------------------------------------------
-# STEP 2: Check Missing Values
+# STEP 2: Split Dataset
 # --------------------------------------------------
 
-print("\nMissing Values:")
-print(df.isnull().sum())
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y
+)
 
 # --------------------------------------------------
-# STEP 3: Fill Missing Numerical Values
-# --------------------------------------------------
-
-df["Age"] = df["Age"].fillna(df["Age"].mean())
-df["Salary"] = df["Salary"].fillna(df["Salary"].mean())
-
-# --------------------------------------------------
-# STEP 4: Remove Duplicate Rows
-# --------------------------------------------------
-
-df = df.drop_duplicates()
-
-print("\nAfter Removing Duplicates:")
-print(df)
-
-# --------------------------------------------------
-# STEP 5: Encode Categorical Data
-# --------------------------------------------------
-
-label_encoder = LabelEncoder()
-
-df["City"] = label_encoder.fit_transform(df["City"])
-df["Purchased"] = label_encoder.fit_transform(df["Purchased"])
-
-print("\nAfter Encoding:")
-print(df)
-
-# --------------------------------------------------
-# STEP 6: Separate Features and Target
-# --------------------------------------------------
-
-X = df.drop("Purchased", axis=1)
-y = df["Purchased"]
-
-# --------------------------------------------------
-# STEP 7: Feature Scaling
+# STEP 3: Feature Scaling
 # --------------------------------------------------
 
 scaler = StandardScaler()
 
-X_scaled = scaler.fit_transform(X)
-
-print("\nScaled Features:")
-print(X_scaled)
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
 
 # --------------------------------------------------
-# STEP 8: Train-Test Split
+# STEP 4: Create KNN Model
 # --------------------------------------------------
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X_scaled,
-    y,
-    test_size=0.2,
-    random_state=42
+k = 5
+
+model = KNeighborsClassifier(n_neighbors=k)
+
+# --------------------------------------------------
+# STEP 5: Train Model
+# --------------------------------------------------
+
+model.fit(X_train, y_train)
+
+# --------------------------------------------------
+# STEP 6: Prediction
+# --------------------------------------------------
+
+y_pred = model.predict(X_test)
+
+# --------------------------------------------------
+# STEP 7: Accuracy
+# --------------------------------------------------
+
+accuracy = accuracy_score(y_test, y_pred)
+
+print("K value:", k)
+
+print("\nAccuracy:")
+print(accuracy)
+
+print("\nAccuracy Percentage:")
+print(accuracy * 100, "%")
+
+# --------------------------------------------------
+# STEP 8: Correct and Wrong Predictions
+# --------------------------------------------------
+
+print("\nCorrect Predictions:")
+
+for actual, predicted in zip(y_test, y_pred):
+
+    if actual == predicted:
+        print(
+            "Actual:",
+            iris.target_names[actual],
+            "Predicted:",
+            iris.target_names[predicted]
+        )
+
+print("\nWrong Predictions:")
+
+for actual, predicted in zip(y_test, y_pred):
+
+    if actual != predicted:
+        print(
+            "Actual:",
+            iris.target_names[actual],
+            "Predicted:",
+            iris.target_names[predicted]
+        )
+
+# --------------------------------------------------
+# STEP 9: Confusion Matrix
+# --------------------------------------------------
+
+print("\nConfusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+
+# --------------------------------------------------
+# STEP 10: Classification Report
+# --------------------------------------------------
+
+print("\nClassification Report:")
+print(
+    classification_report(
+        y_test,
+        y_pred,
+        target_names=iris.target_names
+    )
 )
-
-print("\nTraining Data:")
-print(X_train)
-
-print("\nTesting Data:")
-print(X_test)
-
-print("\nTraining Target:")
-print(y_train)
-
-print("\nTesting Target:")
-print(y_test)
