@@ -1,52 +1,52 @@
-# Program 4: K-Nearest Neighbour Classification
+# Program 5A: Simple Linear Regression
 
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 
-from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 
 # --------------------------------------------------
-# STEP 1: Load Dataset
+# STEP 1: Create Dataset
 # --------------------------------------------------
 
-iris = load_iris()
+data = {
+    "Experience": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "Salary": [25000, 28000, 32000, 35000, 40000,
+               45000, 50000, 55000, 60000, 65000]
+}
 
-X = iris.data
-y = iris.target
+df = pd.DataFrame(data)
+
+print("Dataset:")
+print(df)
 
 # --------------------------------------------------
-# STEP 2: Split Dataset
+# STEP 2: Define X and Y
+# --------------------------------------------------
+
+X = df[["Experience"]]
+y = df["Salary"]
+
+# --------------------------------------------------
+# STEP 3: Train-Test Split
 # --------------------------------------------------
 
 X_train, X_test, y_train, y_test = train_test_split(
     X,
     y,
     test_size=0.2,
-    random_state=42,
-    stratify=y
+    random_state=42
 )
 
 # --------------------------------------------------
-# STEP 3: Feature Scaling
+# STEP 4: Create Model
 # --------------------------------------------------
 
-scaler = StandardScaler()
-
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
-
-# --------------------------------------------------
-# STEP 4: Create KNN Model
-# --------------------------------------------------
-
-k = 5
-
-model = KNeighborsClassifier(n_neighbors=k)
+model = LinearRegression()
 
 # --------------------------------------------------
 # STEP 5: Train Model
@@ -60,64 +60,49 @@ model.fit(X_train, y_train)
 
 y_pred = model.predict(X_test)
 
-# --------------------------------------------------
-# STEP 7: Accuracy
-# --------------------------------------------------
+print("\nActual Salary:")
+print(y_test.values)
 
-accuracy = accuracy_score(y_test, y_pred)
-
-print("K value:", k)
-
-print("\nAccuracy:")
-print(accuracy)
-
-print("\nAccuracy Percentage:")
-print(accuracy * 100, "%")
+print("\nPredicted Salary:")
+print(y_pred)
 
 # --------------------------------------------------
-# STEP 8: Correct and Wrong Predictions
+# STEP 7: Model Parameters
 # --------------------------------------------------
 
-print("\nCorrect Predictions:")
+print("\nCoefficient:")
+print(model.coef_)
 
-for actual, predicted in zip(y_test, y_pred):
-
-    if actual == predicted:
-        print(
-            "Actual:",
-            iris.target_names[actual],
-            "Predicted:",
-            iris.target_names[predicted]
-        )
-
-print("\nWrong Predictions:")
-
-for actual, predicted in zip(y_test, y_pred):
-
-    if actual != predicted:
-        print(
-            "Actual:",
-            iris.target_names[actual],
-            "Predicted:",
-            iris.target_names[predicted]
-        )
+print("\nIntercept:")
+print(model.intercept_)
 
 # --------------------------------------------------
-# STEP 9: Confusion Matrix
+# STEP 8: Evaluation
 # --------------------------------------------------
 
-print("\nConfusion Matrix:")
-print(confusion_matrix(y_test, y_pred))
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print("\nMean Squared Error:")
+print(mse)
+
+print("\nR2 Score:")
+print(r2)
 
 # --------------------------------------------------
-# STEP 10: Classification Report
+# STEP 9: Visualization
 # --------------------------------------------------
 
-print("\nClassification Report:")
-print(
-    classification_report(
-        y_test,
-        y_pred,
-        target_names=iris.target_names
-    )
+plt.scatter(X, y)
+
+plt.plot(
+    X,
+    model.predict(X)
 )
+
+plt.xlabel("Years of Experience")
+plt.ylabel("Salary")
+
+plt.title("Simple Linear Regression")
+
+plt.show()
