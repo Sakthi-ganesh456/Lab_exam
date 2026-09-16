@@ -1,124 +1,101 @@
-# Program 3: Iris Data Exploration and Visualization
+# Program 2: Data Preprocessing
 
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+import numpy as np
 
-from sklearn.datasets import load_iris
-
-# --------------------------------------------------
-# STEP 1: Load Iris Dataset
-# --------------------------------------------------
-
-iris = load_iris()
-
-df = pd.DataFrame(
-    iris.data,
-    columns=iris.feature_names
-)
-
-df["Species"] = iris.target
-
-# Convert numerical target into species names
-
-df["Species"] = df["Species"].map({
-    0: "Setosa",
-    1: "Versicolor",
-    2: "Virginica"
-})
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 
 # --------------------------------------------------
-# STEP 2: Display Dataset
+# STEP 1: Create Dataset
 # --------------------------------------------------
 
-print("First Five Records:")
-print(df.head())
+data = {
+    "Age": [20, 21, np.nan, 25, 23, 21, 20],
+    "Salary": [25000, 30000, 35000, np.nan, 40000, 30000, 25000],
+    "City": ["Trichy", "Chennai", "Madurai", "Trichy",
+             "Chennai", "Chennai", "Trichy"],
+    "Purchased": ["No", "Yes", "Yes", "Yes",
+                  "Yes", "Yes", "No"]
+}
 
-print("\nDataset Shape:")
-print(df.shape)
+df = pd.DataFrame(data)
 
-print("\nColumn Names:")
-print(df.columns)
+print("Original Dataset:")
+print(df)
 
-print("\nStatistical Description:")
-print(df.describe())
-
-print("\nSpecies Count:")
-print(df["Species"].value_counts())
+# --------------------------------------------------
+# STEP 2: Check Missing Values
+# --------------------------------------------------
 
 print("\nMissing Values:")
 print(df.isnull().sum())
 
 # --------------------------------------------------
-# STEP 3: Scatter Plot
+# STEP 3: Fill Missing Numerical Values
 # --------------------------------------------------
 
-plt.figure(figsize=(8, 6))
+df["Age"] = df["Age"].fillna(df["Age"].mean())
+df["Salary"] = df["Salary"].fillna(df["Salary"].mean())
 
-sns.scatterplot(
-    data=df,
-    x="sepal length (cm)",
-    y="sepal width (cm)",
-    hue="Species"
+# --------------------------------------------------
+# STEP 4: Remove Duplicate Rows
+# --------------------------------------------------
+
+df = df.drop_duplicates()
+
+print("\nAfter Removing Duplicates:")
+print(df)
+
+# --------------------------------------------------
+# STEP 5: Encode Categorical Data
+# --------------------------------------------------
+
+label_encoder = LabelEncoder()
+
+df["City"] = label_encoder.fit_transform(df["City"])
+df["Purchased"] = label_encoder.fit_transform(df["Purchased"])
+
+print("\nAfter Encoding:")
+print(df)
+
+# --------------------------------------------------
+# STEP 6: Separate Features and Target
+# --------------------------------------------------
+
+X = df.drop("Purchased", axis=1)
+y = df["Purchased"]
+
+# --------------------------------------------------
+# STEP 7: Feature Scaling
+# --------------------------------------------------
+
+scaler = StandardScaler()
+
+X_scaled = scaler.fit_transform(X)
+
+print("\nScaled Features:")
+print(X_scaled)
+
+# --------------------------------------------------
+# STEP 8: Train-Test Split
+# --------------------------------------------------
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X_scaled,
+    y,
+    test_size=0.2,
+    random_state=42
 )
 
-plt.title("Iris Sepal Length vs Sepal Width")
-plt.show()
+print("\nTraining Data:")
+print(X_train)
 
-# --------------------------------------------------
-# STEP 4: Petal Visualization
-# --------------------------------------------------
+print("\nTesting Data:")
+print(X_test)
 
-plt.figure(figsize=(8, 6))
+print("\nTraining Target:")
+print(y_train)
 
-sns.scatterplot(
-    data=df,
-    x="petal length (cm)",
-    y="petal width (cm)",
-    hue="Species"
-)
-
-plt.title("Iris Petal Length vs Petal Width")
-plt.show()
-
-# --------------------------------------------------
-# STEP 5: Histogram
-# --------------------------------------------------
-
-df.hist(figsize=(10, 8))
-
-plt.suptitle("Iris Dataset Feature Distribution")
-
-plt.show()
-
-# --------------------------------------------------
-# STEP 6: Box Plot
-# --------------------------------------------------
-
-plt.figure(figsize=(10, 6))
-
-sns.boxplot(data=df.drop(columns=["Species"]))
-
-plt.title("Iris Feature Box Plot")
-
-plt.xticks(rotation=20)
-
-plt.show()
-
-# --------------------------------------------------
-# STEP 7: Correlation Heatmap
-# --------------------------------------------------
-
-plt.figure(figsize=(8, 6))
-
-correlation = df.drop(columns=["Species"]).corr()
-
-sns.heatmap(
-    correlation,
-    annot=True,
-    cmap="coolwarm"
-)
-
-plt.title("Feature Correlation")
-
-plt.show()
+print("\nTesting Target:")
+print(y_test)
