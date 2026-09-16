@@ -1,15 +1,15 @@
-# PROGRAM 7
-# Support Vector Machine Classification
-# Iris Dataset
+# PROGRAM 8
+# Naive Bayes Classification
+# Iris Dataset from CSV File
 
 import pandas as pd
 
 from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC
+from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score
 
 # --------------------------------------------------
-# STEP 1: Load Dataset
+# STEP 1: Load Dataset from CSV
 # --------------------------------------------------
 
 df = pd.read_csv("Iris.csv")
@@ -33,7 +33,7 @@ X = df[
 y = df["Species"]
 
 # --------------------------------------------------
-# STEP 3: Split Dataset
+# STEP 3: Split Dataset into Training and Testing
 # --------------------------------------------------
 
 X_train, X_test, y_train, y_test = train_test_split(
@@ -45,25 +45,25 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # --------------------------------------------------
-# STEP 4: Create SVM Model
+# STEP 4: Create Naive Bayes Model
 # --------------------------------------------------
 
-model = SVC(kernel="linear")
+model = GaussianNB()
 
 # --------------------------------------------------
-# STEP 5: Train Model
+# STEP 5: Train the Model
 # --------------------------------------------------
 
 model.fit(X_train, y_train)
 
 # --------------------------------------------------
-# STEP 6: Make Predictions
+# STEP 6: Predict Test Data
 # --------------------------------------------------
 
 y_pred = model.predict(X_test)
 
 # --------------------------------------------------
-# STEP 7: Print Actual and Predicted Values
+# STEP 7: Display Actual and Predicted Values
 # --------------------------------------------------
 
 print("\nActual and Predicted Values:")
@@ -95,4 +95,4 @@ for actual, predicted in zip(y_test, y_pred):
 accuracy = accuracy_score(y_test, y_pred)
 
 print("\n--------------------------------")
-print("SVM Accuracy:", accuracy * 100, "%")
+print("Naive Bayes Accuracy:", accuracy * 100, "%")
