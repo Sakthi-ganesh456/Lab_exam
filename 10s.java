@@ -1,8 +1,6 @@
-# Program 5A: Simple Linear Regression
+# Program 5B: Multiple Linear Regression
 
-import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
@@ -10,11 +8,13 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
 
 # --------------------------------------------------
-# STEP 1: Create Dataset
+# STEP 1: Dataset
 # --------------------------------------------------
 
 data = {
     "Experience": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "Age": [22, 23, 24, 25, 27, 29, 30, 32, 34, 36],
+    "Education": [60, 65, 70, 72, 75, 78, 80, 85, 88, 90],
     "Salary": [25000, 28000, 32000, 35000, 40000,
                45000, 50000, 55000, 60000, 65000]
 }
@@ -25,14 +25,21 @@ print("Dataset:")
 print(df)
 
 # --------------------------------------------------
-# STEP 2: Define X and Y
+# STEP 2: Features and Target
 # --------------------------------------------------
 
-X = df[["Experience"]]
+X = df[
+    [
+        "Experience",
+        "Age",
+        "Education"
+    ]
+]
+
 y = df["Salary"]
 
 # --------------------------------------------------
-# STEP 3: Train-Test Split
+# STEP 3: Split Dataset
 # --------------------------------------------------
 
 X_train, X_test, y_train, y_test = train_test_split(
@@ -49,7 +56,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 model = LinearRegression()
 
 # --------------------------------------------------
-# STEP 5: Train Model
+# STEP 5: Train
 # --------------------------------------------------
 
 model.fit(X_train, y_train)
@@ -60,18 +67,23 @@ model.fit(X_train, y_train)
 
 y_pred = model.predict(X_test)
 
-print("\nActual Salary:")
+print("\nActual Values:")
 print(y_test.values)
 
-print("\nPredicted Salary:")
+print("\nPredicted Values:")
 print(y_pred)
 
 # --------------------------------------------------
-# STEP 7: Model Parameters
+# STEP 7: Coefficients
 # --------------------------------------------------
 
-print("\nCoefficient:")
-print(model.coef_)
+print("\nCoefficients:")
+
+for feature, coefficient in zip(
+    X.columns,
+    model.coef_
+):
+    print(feature, ":", coefficient)
 
 print("\nIntercept:")
 print(model.intercept_)
@@ -81,6 +93,7 @@ print(model.intercept_)
 # --------------------------------------------------
 
 mse = mean_squared_error(y_test, y_pred)
+
 r2 = r2_score(y_test, y_pred)
 
 print("\nMean Squared Error:")
@@ -88,21 +101,3 @@ print(mse)
 
 print("\nR2 Score:")
 print(r2)
-
-# --------------------------------------------------
-# STEP 9: Visualization
-# --------------------------------------------------
-
-plt.scatter(X, y)
-
-plt.plot(
-    X,
-    model.predict(X)
-)
-
-plt.xlabel("Years of Experience")
-plt.ylabel("Salary")
-
-plt.title("Simple Linear Regression")
-
-plt.show()
