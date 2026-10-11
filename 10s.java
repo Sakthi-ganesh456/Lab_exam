@@ -1,98 +1,26 @@
-# PROGRAM 8
-# Naive Bayes Classification
-# Iris Dataset from CSV File
-
-import pandas as pd
-
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score
-
-# --------------------------------------------------
-# STEP 1: Load Dataset from CSV
-# --------------------------------------------------
-
-df = pd.read_csv("Iris.csv")
-
-print("Iris Dataset:")
-print(df.head())
-
-# --------------------------------------------------
-# STEP 2: Select Features and Target
-# --------------------------------------------------
-
-X = df[
-    [
-        "SepalLengthCm",
-        "SepalWidthCm",
-        "PetalLengthCm",
-        "PetalWidthCm"
-    ]
-]
-
-y = df["Species"]
-
-# --------------------------------------------------
-# STEP 3: Split Dataset into Training and Testing
-# --------------------------------------------------
-
+iris = load_iris()
+X = iris.data[:, :2]
+y = iris.target
 X_train, X_test, y_train, y_test = train_test_split(
-    X,
-    y,
-    test_size=0.2,
-    random_state=42,
-    stratify=y
+X, y, test_size=0.2, random_state=42
 )
-
-# --------------------------------------------------
-# STEP 4: Create Naive Bayes Model
-# --------------------------------------------------
-
-model = GaussianNB()
-
-# --------------------------------------------------
-# STEP 5: Train the Model
-# --------------------------------------------------
-
+model = KNeighborsClassifier(n_neighbors=3)
 model.fit(X_train, y_train)
-
-# --------------------------------------------------
-# STEP 6: Predict Test Data
-# --------------------------------------------------
-
 y_pred = model.predict(X_test)
-
-# --------------------------------------------------
-# STEP 7: Display Actual and Predicted Values
-# --------------------------------------------------
-
-print("\nActual and Predicted Values:")
-print("--------------------------------")
-
-for actual, predicted in zip(y_test, y_pred):
-
-    if actual == predicted:
-        print(
-            "Actual:",
-            actual,
-            " Predicted:",
-            predicted,
-            " --> Correct"
-        )
-    else:
-        print(
-            "Actual:",
-            actual,
-            " Predicted:",
-            predicted,
-            " --> Wrong"
-        )
-
-# --------------------------------------------------
-# STEP 8: Calculate Accuracy
-# --------------------------------------------------
-
-accuracy = accuracy_score(y_test, y_pred)
-
-print("\n--------------------------------")
-print("Naive Bayes Accuracy:", accuracy * 100, "%")
+print("Accuracy:", accuracy_score(y_test, y_pred))
+plt.scatter(X[:, 0], X[:, 1], c=y)
+plt.xlabel("Sepal Length")
+plt.ylabel("Sepal Width")
+plt.title("Iris Dataset - KNN")
+plt.show()
+plt.scatter(X_test[:, 0], X_test[:, 1], c=y_pred,
+marker="x", s=100)
+plt.xlabel("Sepal Length")
+plt.ylabel("Sepal Width")
+plt.title("KNN Predictions")
+plt.show()
