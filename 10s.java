@@ -1,26 +1,36 @@
 import matplotlib.pyplot as plt
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score
-iris = load_iris()
-X = iris.data[:, :2]
-y = iris.target
-X_train, X_test, y_train, y_test = train_test_split(
-X, y, test_size=0.2, random_state=42
-)
-model = KNeighborsClassifier(n_neighbors=3)
-model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
-print("Accuracy:", accuracy_score(y_test, y_pred))
-plt.scatter(X[:, 0], X[:, 1], c=y)
-plt.xlabel("Sepal Length")
-plt.ylabel("Sepal Width")
-plt.title("Iris Dataset - KNN")
+from sklearn.datasets import load_wine
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+data = load_wine()
+X = StandardScaler().fit_transform(data.data)
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X)
+plt.scatter(X_pca[:, 0], X_pca[:, 1], c=data.target, cmap='viridis')
+plt.xlabel("Principal Component 1")
+plt.ylabel("Principal Component 2")
+plt.title("PCA - Wine Dataset")
+plt.colorbar(label="Wine Class")
 plt.show()
-plt.scatter(X_test[:, 0], X_test[:, 1], c=y_pred,
-marker="x", s=100)
-plt.xlabel("Sepal Length")
-plt.ylabel("Sepal Width")
-plt.title("KNN Predictions")
+print("Original Features:", data.data.shape[1])
+print("Reduced Features:", X_pca.shape[1])
+print("Explained Variance:", pca.explained_variance_ratio_.sum())
+
+
+  import matplotlib.pyplot as plt
+from sklearn.datasets import load_diabetes
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+data = load_diabetes()
+X = StandardScaler().fit_transform(data.data)
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X)
+plt.scatter(X_pca[:, 0], X_pca[:, 1], c=data.target, cmap='plasma')
+plt.xlabel("Principal Component 1")
+plt.ylabel("Principal Component 2")
+plt.title("PCA - Diabetes Dataset")
+plt.colorbar(label="Disease Progression")
 plt.show()
+print("Original Features:", data.data.shape[1])
+print("Reduced Features:", X_pca.shape[1])
+print("Explained Variance:", pca.explained_variance_ratio_.sum())
