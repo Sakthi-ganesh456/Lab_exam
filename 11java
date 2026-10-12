@@ -1,17 +1,35 @@
 import matplotlib.pyplot as plt
-from sklearn.datasets import load_wine
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
-data = load_wine()
-X = StandardScaler().fit_transform(data.data)
-pca = PCA(n_components=2)
-X_pca = pca.fit_transform(X)
-plt.scatter(X_pca[:, 0], X_pca[:, 1], c=data.target, cmap='viridis')
-plt.xlabel("Principal Component 1")
-plt.ylabel("Principal Component 2")
-plt.title("PCA - Wine Dataset")
-plt.colorbar(label="Wine Class")
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.preprocessing import LabelEncoder
+import pandas as pd
+data = pd.DataFrame({
+'Outlook': ['Sunny', 'Sunny', 'Overcast', 'Rain', 'Rain', 'Rain', 'Overcast', 'Sunny', 'Sunny', 'Rain', 'S
+unny', 'Overcast', 'Overcast', 'Rain'],
+'Temperature': ['Hot', 'Hot', 'Hot', 'Mild', 'Cool', 'Cool', 'Cool', 'Mild', 'Cool', 'Mild', 'Mild', 'Mil
+d', 'Hot', 'Mild'],
+'Humidity': ['High', 'High', 'High', 'High', 'Normal', 'Normal', 'Normal', 'High', 'Normal', 'Normal', 'N
+ormal', 'High', 'Normal', 'High'],
+'Wind': ['Weak', 'Strong', 'Weak', 'Weak', 'Weak', 'Strong', 'Strong', 'Weak', 'Weak', 'Weak', 'Strong', '
+Strong', 'Weak', 'Strong'],
+'Play': ['No', 'No', 'Yes', 'Yes', 'Yes', 'No', 'Yes', 'No', 'Yes', 'Yes', 'Yes', 'Yes', 'Yes', 'No']
+})
+encoders = {}
+for col in data.columns:
+encoders[col] = LabelEncoder()
+data[col] = encoders[col].fit_transform(data[col])
+X = data.drop('Play', axis=1)
+y = data['Play']
+model = DecisionTreeClassifier(criterion='entropy', random_state=42)
+model.fit(X, y)
+plt.figure(figsize=(12, 7))
+plot_tree(model, feature_names=X.columns, class_names=encoders['Play'].classes_, filled=True)
+plt.title("Decision Tree - Weather Prediction")
 plt.show()
-print("Original Features:", data.data.shape[1])
-print("Reduced Features:", X_pca.shape[1])
-print("Explained Variance:", pca.explained_variance_ratio_.sum())
+sample = pd.DataFrame([{
+'Outlook': encoders['Outlook'].transform(['Sunny'])[0],
+'Temperature': encoders['Temperature'].transform(['Cool'])[0],
+'Humidity': encoders['Humidity'].transform(['Normal'])[0],
+'Wind': encoders['Wind'].transform(['Weak'])[0]
+}])
+prediction = model.predict(sample)
+print("Prediction:", encoders['Play'].inverse_transform(prediction)[0])
