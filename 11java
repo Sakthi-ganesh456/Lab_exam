@@ -1,36 +1,17 @@
-import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
-data = pd.DataFrame({
-'Income': [30000, 45000, 50000, 60000, 25000, 70000, 80000, 35000, 90000, 40000, 55000, 65000],
-'LoanAmount': [100, 150, 120, 180, 200, 160, 200, 100, 250, 130, 140, 170],
-'CreditHistory': [0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1],
-'Approved': [0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1]
-})
-X = data[['Income', 'LoanAmount', 'CreditHistory']]
-y = data['Approved']
-X_train, X_test, y_train, y_test = train_test_split(
-X, y, test_size=0.25, random_state=42
-)
-model = LogisticRegression(max_iter=1000)
-model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
-print("Accuracy:", accuracy_score(y_test, y_pred))
-print("Loan Prediction:", model.predict([[50000, 120, 1]])[0])
-# Visualization 1: Scatter plot of Income vs Loan Amount by Status
-plt.figure(figsize=(6, 4))
-sns.scatterplot(data=data, x='Income', y='LoanAmount', hue='Approved', style='CreditHistory', s=100, palette='
-Set2')
-plt.title("Income vs Loan Amount (Hue=Approved, Shape=CreditHistory)")
+from sklearn.datasets import load_wine
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+data = load_wine()
+X = StandardScaler().fit_transform(data.data)
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X)
+plt.scatter(X_pca[:, 0], X_pca[:, 1], c=data.target, cmap='viridis')
+plt.xlabel("Principal Component 1")
+plt.ylabel("Principal Component 2")
+plt.title("PCA - Wine Dataset")
+plt.colorbar(label="Wine Class")
 plt.show()
-# Visualization 2: Feature Importance Bar Plot (Model Coefficients)
-plt.figure(figsize=(6, 4))
-coefs = model.coef_[0]
-plt.bar(X.columns, coefs, color=['blue', 'orange', 'green'])
-plt.title("Logistic Regression Feature Importance (Coefficients)")
-plt.ylabel("Coefficient Value")
-plt.axhline(0, color='black', linewidth=0.8)
-plt.show()
+print("Original Features:", data.data.shape[1])
+print("Reduced Features:", X_pca.shape[1])
+print("Explained Variance:", pca.explained_variance_ratio_.sum())
