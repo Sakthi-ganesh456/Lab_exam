@@ -1,35 +1,19 @@
 import matplotlib.pyplot as plt
-from sklearn.tree import DecisionTreeClassifier, plot_tree
-from sklearn.preprocessing import LabelEncoder
 import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
 data = pd.DataFrame({
-'Outlook': ['Sunny', 'Sunny', 'Overcast', 'Rain', 'Rain', 'Rain', 'Overcast', 'Sunny', 'Sunny', 'Rain', 'S
-unny', 'Overcast', 'Overcast', 'Rain'],
-'Temperature': ['Hot', 'Hot', 'Hot', 'Mild', 'Cool', 'Cool', 'Cool', 'Mild', 'Cool', 'Mild', 'Mild', 'Mil
-d', 'Hot', 'Mild'],
-'Humidity': ['High', 'High', 'High', 'High', 'Normal', 'Normal', 'Normal', 'High', 'Normal', 'Normal', 'N
-ormal', 'High', 'Normal', 'High'],
-'Wind': ['Weak', 'Strong', 'Weak', 'Weak', 'Weak', 'Strong', 'Strong', 'Weak', 'Weak', 'Weak', 'Strong', '
-Strong', 'Weak', 'Strong'],
-'Play': ['No', 'No', 'Yes', 'Yes', 'Yes', 'No', 'Yes', 'No', 'Yes', 'Yes', 'Yes', 'Yes', 'Yes', 'No']
+'Income': [15, 16, 17, 18, 20, 60, 62, 65, 70, 72, 90, 92, 95, 98, 100],
+'Spending': [80, 85, 78, 82, 75, 40, 45, 42, 35, 38, 15, 20, 18, 12, 10]
 })
-encoders = {}
-for col in data.columns:
-encoders[col] = LabelEncoder()
-data[col] = encoders[col].fit_transform(data[col])
-X = data.drop('Play', axis=1)
-y = data['Play']
-model = DecisionTreeClassifier(criterion='entropy', random_state=42)
-model.fit(X, y)
-plt.figure(figsize=(12, 7))
-plot_tree(model, feature_names=X.columns, class_names=encoders['Play'].classes_, filled=True)
-plt.title("Decision Tree - Weather Prediction")
+scaler = StandardScaler()
+X = scaler.fit_transform(data)
+model = KMeans(n_clusters=3, random_state=42, n_init=10)
+data['Cluster'] = model.fit_predict(X)
+print(data)
+plt.scatter(data['Income'], data['Spending'],
+c=data['Cluster'], cmap='viridis', s=100)
+plt.xlabel("Annual Income (in thousands)")
+plt.ylabel("Spending Score")
+plt.title("K-Means Customer Clustering")
 plt.show()
-sample = pd.DataFrame([{
-'Outlook': encoders['Outlook'].transform(['Sunny'])[0],
-'Temperature': encoders['Temperature'].transform(['Cool'])[0],
-'Humidity': encoders['Humidity'].transform(['Normal'])[0],
-'Wind': encoders['Wind'].transform(['Weak'])[0]
-}])
-prediction = model.predict(sample)
-print("Prediction:", encoders['Play'].inverse_transform(prediction)[0])
